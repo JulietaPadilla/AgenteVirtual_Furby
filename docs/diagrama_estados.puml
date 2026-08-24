@@ -1,0 +1,32 @@
+@startuml maquina_estados_furby
+
+[*] --> HUEVO
+
+HUEVO --> NORMAL : Nacer()
+
+NORMAL --> HAMBRE : tHambre vence
+NORMAL --> SUCIO : HacerPopo()
+NORMAL --> CON_SUENO : barra de sueno baja
+
+CON_SUENO --> NORMAL : Despertar() /\nsueno recuperado
+CON_SUENO --> HAMBRE : hambre baja\n[durmiendo mucho]
+
+HAMBRE --> NORMAL : Comer()
+HAMBRE --> ENFERMO : tEnfermedad vence\n[sigue sin comer]
+HAMBRE --> MUERTO : tVida vence\n[hambre prolongada]
+
+SUCIO --> NORMAL : Banar()
+SUCIO --> ENFERMO : tEnfermedad vence\n[sigue sucio]
+
+ENFERMO --> NORMAL : Curar()
+ENFERMO --> MUERTO : tVida vence\n[no fue curado a tiempo]
+
+MUERTO --> [*]
+
+note right of MUERTO
+  Estado final.
+  Solo se sale reiniciando
+  el juego (nuevo Furby).
+end note
+
+@enduml

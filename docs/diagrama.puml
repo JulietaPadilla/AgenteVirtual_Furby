@@ -1,0 +1,114 @@
+@startuml diagrama_furby
+
+class Temporizador {
+    # tiempoLimite: float
+    # reloj: sf::Clock
+    # activo: bool
+    + Temporizador(limite: float)
+    + Actualizar(): bool
+    + Reiniciar()
+    + Pausar()
+    + EstaActivo(): bool
+}
+
+class THambre {
+    + THambre(limite: float)
+}
+
+class TVida {
+    + TVida(limite: float)
+}
+
+class TEnfermedad {
+    + TEnfermedad(limite: float)
+}
+
+class TSueno {
+    + TSueno(limite: float)
+}
+
+enum EstadoFurby {
+    HUEVO
+    NORMAL
+    HAMBRE
+    SUCIO
+    ENFERMO
+    CON_SUENO
+    MUERTO
+}
+
+class Furby {
+    - nombre: string
+    - hambre: int
+    - higiene: int
+    - salud: int
+    - edad: int
+    - estadoActual: EstadoFurby
+    - textura: sf::Texture
+    - sprite: sf::Sprite
+    - actualFrame: int
+    - totalFrames: int
+    - anchoFrame: int
+    - altoFrame: int
+    - relojAnimacion: sf::Clock
+    - tHambre: THambre
+    - tVida: TVida
+    - tEnfermedad: TEnfermedad
+    - tSueno: TSueno
+    + Furby(n: string)
+    + Nacer()
+    + Comer()
+    + Banar()
+    + Enfermar()
+    + Curar()
+    + HacerPopo()
+    + Dormir()
+    + Despertar()
+    + Morir()
+    + ActualizarTiempo()
+    + ForzarEstado(nuevoEstado: EstadoFurby)
+    + ActualizarAnimacion()
+    + Dibujar(window: sf::RenderWindow&)
+    + ObtenerEstado(): EstadoFurby
+    + ObtenerNombre(): string
+    + ObtenerHambre(): int
+    + ObtenerHigiene(): int
+    + ObtenerSalud(): int
+}
+
+class JuegoAgente {
+    - personaje: Furby
+    - ventana: sf::RenderWindow
+    - fuente: sf::Font
+    - textoEstado: sf::Text
+    + IniciarJuego()
+    + ProcesarEventos()
+    + Actualizar()
+    + Dibujar()
+    + MostrarPantallaInicio()
+}
+
+class BotonInterfaz {
+    - forma: sf::RectangleShape
+    - texto: sf::Text
+    + BotonInterfaz(etiqueta: string, x: float, y: float)
+    + FueClickeado(posicionRaton: sf::Vector2i): bool
+    + Dibujar(window: sf::RenderWindow&)
+}
+
+THambre --|> Temporizador : es un
+TVida --|> Temporizador : es un
+TEnfermedad --|> Temporizador : es un
+TSueno --|> Temporizador : es un
+
+JuegoAgente *-- Furby : tiene un
+Furby *-- THambre : tiene un
+Furby *-- TVida : tiene un
+Furby *-- TEnfermedad : tiene un
+Furby *-- TSueno : tiene un
+JuegoAgente "1" *-- "*"BotonInterfaz : tiene muchos
+
+Furby ..> EstadoFurby : usa un
+main o-- JuegoAgente : usa un
+
+@enduml
