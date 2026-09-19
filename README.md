@@ -1,59 +1,212 @@
 # Agente Virtual Furby
 
-Juego Tamagotchi en C++17 con SFML y MinGW64.
+**Autora:** Julieta Padilla Casillas
 
-## Sprites
+[![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
+[![SFML](https://img.shields.io/badge/SFML-2.5%2B-green.svg)](https://www.sfml-dev.org/)
+[![Build](https://img.shields.io/badge/build-CMake-orange.svg)](https://cmake.org/)
+[![License](https://img.shields.io/badge/license-Educational-orange.svg)]()
 
-Coloca estos sprites en `assets/Images/`:
+## Descripcion
 
-```text
-huevo.png       normal.png      hambre.png     sucio.png
-enfermo.png     con_sueno.png   muerto.png
-```
+Agente Virtual Furby es un videojuego tipo Tamagotchi desarrollado en C++17 y SFML. El jugador cuida a un Furby, atiende sus necesidades y observa como cambia entre estados mediante una maquina de estados.
 
-El programa busca los recursos desde la raíz del proyecto y también desde `bin`, por lo que puedes ejecutar el `.exe` dentro de `bin`.
+El juego incluye una pantalla de inicio para asignar un nombre, fondos pixel art, musica, animaciones y estados combinados como `HAMBRE + CANSADO` y `HAMBRE + SUCIO`.
 
-El programa carga automáticamente el sprite correspondiente al estado. Si no existe, dibuja una figura de respaldo. Usa preferiblemente PNG con transparencia; una imagen de 256 x 256 píxeles es un buen tamaño inicial.
+---
 
-Actualmente `huevo.png` es una tira horizontal de 5 frames: el juego divide automáticamente su ancho y muestra una etapa distinta por clic; el Furby nace al quinto clic. Los sprites `normal.png`, `hambre.png`, `sucio.png`, `enfermo.png`, `con_sueno.png` y `muerto.png` se cargan como imágenes individuales y se muestran completos.
+## Caracteristicas principales
 
-Para cambiar el archivo o añadir otro sprite, modifica esta línea en `src/main.cpp`:
+- **Maquina de estados:** el Furby cambia mediante acciones y condiciones definidas, no por cambios arbitrarios.
+- **Necesidades del Furby:** hambre, higiene, salud y sueno.
+- **Estados combinados:** hambre con cansancio y hambre con suciedad.
+- **Nacimiento interactivo:** el huevo se abre despues de cinco golpes.
+- **Nombre personalizado:** cada jugador puede escribir el nombre del Furby desde el teclado.
+- **Sprites y animaciones:** imagenes para cada estado y acciones como comer, banarse, dormir y curarse.
+- **Musica de fondo:** reproduccion continua durante el juego.
+- **Fondos pixel art:** pantalla de inicio y escenario principal configurables.
+- **Pantalla de muerte y reanimacion:** el jugador puede revivir al Furby despues de su muerte.
 
-```cpp
-personaje.CargarSpritesPorEstado("assets/Images/");
-```
+---
 
-## Fuente
+## Requisitos
 
-Para usar una fuente propia, crea `assets/Fonts/` y coloca allí `arial.ttf`. Si no está, el programa intenta usar la fuente de Windows en `C:/Windows/Fonts/arial.ttf`.
+- C++17 o superior.
+- SFML 2.5 o superior.
+- MinGW64 en Windows o un compilador compatible.
+- CMake 3.16 o superior para compilar con CMake.
 
-## Compilar con MinGW64
+En Windows con MinGW64, agrega `C:\msys64\mingw64\bin` al `PATH` si el sistema no encuentra las DLL de SFML.
 
-Desde CMD o PowerShell, abierto en la carpeta raíz del proyecto:
+---
+
+## Instalacion y compilacion
+
+### Compilacion directa con MinGW64
+
+Desde CMD o PowerShell, ubicado en la carpeta raiz del proyecto:
 
 ```powershell
-g++ -std=c++17 -Wall -Wextra -pedantic -Iinclude src/main.cpp -o bin/AgenteVirtualFurby.exe -lsfml-graphics -lsfml-window -lsfml-system
-bin\AgenteVirtualFurby.exe
+g++ -std=c++17 -Wall -Wextra -pedantic -Iinclude src/main.cpp -o bin/AgenteVirtualFurby.exe -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 ```
 
-Si Windows informa que faltan DLL, agrega `C:\msys64\mingw64\bin` al `PATH` o copia junto al `.exe` las DLL de SFML (`sfml-graphics-2.dll`, `sfml-window-2.dll`, `sfml-system-2.dll`) y las dependencias de MinGW64.
-
-## Compilar con CMake
-
-Se necesita SFML 2.5 o superior instalado y disponible para CMake.
+### Compilacion con CMake
 
 ```powershell
 cmake -S . -B build -G "MinGW Makefiles"
 cmake --build build
+```
+
+### Ejecutar
+
+```powershell
 .\bin\AgenteVirtualFurby.exe
 ```
 
+Si aparecen errores de DLL, copia junto al ejecutable las bibliotecas de SFML y sus dependencias de MinGW64, o agrega la carpeta correspondiente al `PATH`.
+
+---
+
+## Inicio del juego
+
+1. Ejecuta el programa.
+2. Haz clic en el campo de nombre.
+3. Escribe el nombre del Furby con el teclado.
+4. Presiona `Enter` o selecciona `COMENZAR`.
+5. Golpea el huevo cinco veces para que nazca.
+
+---
+
 ## Controles
 
-Al iniciar aparece el huevo y no hay menú de controles. Haz clic tres veces sobre el huevo para que nazca. Después puedes usar los botones de acciones o sus teclas: `C` come, `B` lo bana, `P` lo ensucia, `D` lo duerme, `W` lo despierta y `R` lo cura. `E` lo enferma y `K` lo mata para probar esos estados.
+| Tecla | Accion |
+|:-----:|:-------|
+| `C` | Comer |
+| `B` | Banar |
+| `P` | Hacer popo |
+| `D` | Dormir cuando el sueno es bajo |
+| `W` | Despertar |
+| `R` | Curar |
+| `K` | Probar la muerte |
+| `V` | Revivir al Furby |
 
-`HUEVO` solo aparece al iniciar. Haz clic cinco veces sobre él para que nazca; cada clic muestra una etapa distinta y después ya no se puede volver a seleccionar ese estado. Las teclas `1` a `5` y los botones permiten probar `NORMAL`, `HAMBRE`, `SUCIO`, `ENFERMO` y `CON SUENO`. `D` ejecuta la acción de dormir y `W` la interrumpe. `K` o `6` sirven para probar la muerte. Al morir, `V` o el botón `REVIVIR` recuperan al Furby con valores al 70%.
+Tambien puedes utilizar los botones visibles en pantalla.
 
-Cada necesidad tiene su propio ritmo: despierto, hambre baja cada 8 segundos, sueño cada 10 segundos e higiene cada 14 segundos. Al usar `DORMIR`, el sueño conserva su valor actual y se recupera continuamente cada 5 segundos; no se detiene ni despierta automáticamente. Mientras duerme, hambre e higiene siguen bajando, pero más lentamente. Solo `DESPERTAR` termina el descanso. Cuando una barra baja de 50%, el Furby muestra automáticamente `CON SUENO`. La salud pierde más puntos cuanto mayor es el déficit combinado de hambre, sueño e higiene; si llega a cero, el Furby muere.
+---
 
-Al forzar un estado con un botón, las barras también se ajustan para mostrar una situación coherente: `NORMAL` coloca todo al 100%; `HAMBRE`, `SUCIO`, `ENFERMO` y `DORMIDO` reducen respectivamente la barra afectada; `MUERTO` coloca todas las barras en 0%.
+## Maquina de estados
+
+Los estados principales son:
+
+```text
+HUEVO
+NORMAL
+HAMBRE
+SUCIO
+CANSADO
+HAMBRE + CANSADO
+HAMBRE + SUCIO
+ENFERMO
+MUERTO
+```
+
+### Umbrales de necesidades
+
+- El hambre baja cada 8 segundos.
+- La higiene baja cada 8 segundos.
+- El sueno baja cada 10 segundos.
+- `HAMBRE`, `SUCIO` y `CANSADO` aparecen cuando la necesidad correspondiente llega al 50% o menos.
+- `ENFERMO` aparece cuando la salud llega al 30% o menos.
+- `MUERTO` aparece cuando la salud llega a 0%.
+- `COMER`, `BANAR`, `DORMIR`, `DESPERTAR` y `CURAR` producen las transiciones permitidas.
+
+El diagrama completo se encuentra en [`docs/diagrama_estados.puml`](docs/diagrama_estados.puml).
+
+---
+
+## Recursos visuales y audio
+
+### Imagenes por estado
+
+Coloca los siguientes archivos en `assets/Images/`:
+
+```text
+huevo.png
+normal.png
+hambre.png
+sucio.png
+enfermo.png
+cansado.png
+hambre_cansado.png
+hambre_sucio.png
+muerto.png
+```
+
+`huevo.png` debe ser una tira horizontal de cinco frames. Los demas sprites se cargan como imagenes individuales.
+
+### Fondos
+
+```text
+assets/Images/pantalla_inicio.png
+assets/Images/fondo_juego.png
+```
+
+Ambos fondos se ajustan automaticamente a la ventana de 800 x 600.
+
+### Animaciones y musica
+
+```text
+assets/Images/acciones/comer.png
+assets/Images/acciones/banar.png
+assets/Images/acciones/despertar.png
+assets/Images/acciones/dormir.png
+assets/Images/acciones/curar.png
+assets/Music/musica.mp3
+assets/fonts/F25_Bank_Printer.otf
+```
+
+Las animaciones pueden ser imagenes individuales o tiras horizontales de cinco frames.
+
+---
+
+## Estructura del proyecto
+
+```text
+AgenteVirtual_Furby/
+├── assets/
+│   ├── fonts/       # Fuente del juego
+│   ├── Images/      # Sprites, fondos y animaciones
+│   ├── Music/       # Musica de fondo
+│   └── Puntajes/   # Recursos de puntajes
+├── bin/             # Ejecutable generado
+├── docs/            # Diagramas PlantUML
+├── include/         # Archivos de cabecera
+├── src/             # Codigo fuente
+├── CMakeLists.txt
+└── README.md
+```
+
+---
+
+## Diagramas
+
+- [Diagrama de estados](docs/diagrama_estados.puml)
+- [Diagrama de clases](docs/diagrama.puml)
+
+Puedes visualizar los archivos `.puml` con la extension PlantUML de VS Code y Java instalado.
+
+---
+
+## Autoria y licencia
+
+- **Autora:** Julieta Padilla Casillas
+- **Proposito:** proyecto educativo
+- **Tecnologias:** C++17, SFML y CMake
+
+Los recursos visuales, la musica y la fuente se utilizan con fines educativos.
+
+---
+
+## Comienza a jugar
+
+Cuida a tu Furby, manten sus necesidades equilibradas y descubre como evoluciona su estado.

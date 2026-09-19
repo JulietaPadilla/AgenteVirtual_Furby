@@ -2,31 +2,42 @@
 
 [*] --> HUEVO
 
+state "HAMBRE + CANSADO" as HAMBRE_CANSADO
+state "HAMBRE + SUCIO" as HAMBRE_SUCIO
+state CANSADO
+
 HUEVO --> NORMAL : Nacer()
 
-NORMAL --> HAMBRE : tHambre vence
-NORMAL --> SUCIO : HacerPopo()
-NORMAL --> CON_SUENO : barra de sueno baja
+NORMAL --> HAMBRE : hambre <= 50%
+NORMAL --> SUCIO : higiene <= 50%
+NORMAL --> CANSADO : sueno <= 50%
 
-CON_SUENO --> NORMAL : Despertar() /\nsueno recuperado
-CON_SUENO --> HAMBRE : hambre baja\n[durmiendo mucho]
+CANSADO --> NORMAL : Despertar()
+CANSADO --> HAMBRE_CANSADO : hambre <= 50%
 
 HAMBRE --> NORMAL : Comer()
-HAMBRE --> ENFERMO : tEnfermedad vence\n[sigue sin comer]
-HAMBRE --> MUERTO : tVida vence\n[hambre prolongada]
+HAMBRE --> HAMBRE_CANSADO : sueno <= 50%
+HAMBRE --> HAMBRE_SUCIO : higiene <= 50%
 
 SUCIO --> NORMAL : Banar()
-SUCIO --> ENFERMO : tEnfermedad vence\n[sigue sucio]
+SUCIO --> HAMBRE_SUCIO : hambre <= 50%
 
+HAMBRE_CANSADO --> CANSADO : Comer()
+HAMBRE_CANSADO --> HAMBRE_SUCIO : higiene <= 50%
+
+HAMBRE_SUCIO --> SUCIO : Comer()
+HAMBRE_SUCIO --> HAMBRE : Banar()
+
+HAMBRE_CANSADO --> ENFERMO : salud <= 30%
+HAMBRE_SUCIO --> ENFERMO : salud <= 30%
 ENFERMO --> NORMAL : Curar()
-ENFERMO --> MUERTO : tVida vence\n[no fue curado a tiempo]
+ENFERMO --> MUERTO : salud <= 0%
 
 MUERTO --> [*]
 
 note right of MUERTO
   Estado final.
-  Solo se sale reiniciando
-  el juego (nuevo Furby).
+  Solo se sale con REVIVIR.
 end note
 
 @enduml

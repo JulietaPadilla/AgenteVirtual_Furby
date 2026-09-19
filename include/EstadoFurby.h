@@ -6,7 +6,9 @@ enum class EstadoFurby {
     HAMBRE,
     SUCIO,
     ENFERMO,
-    CON_SUENO,
+    CANSADO,
+    HAMBRE_CANSADO,
+    HAMBRE_SUCIO,
     MUERTO
 };
 

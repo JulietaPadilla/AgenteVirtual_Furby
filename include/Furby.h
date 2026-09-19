@@ -10,6 +10,15 @@
 #include <array>
 #include <string>
 
+enum class AccionFurby {
+    NINGUNA,
+    COMER,
+    BANAR,
+    DESPERTAR,
+    DORMIR,
+    CURAR
+};
+
 class Furby {
 public:
     explicit Furby(const std::string& nombre);
@@ -18,7 +27,6 @@ public:
     void GolpearHuevo();
     void Comer();
     void Banar();
-    void Enfermar();
     void Curar();
     void HacerPopo();
     void Dormir();
@@ -26,7 +34,6 @@ public:
     void Morir();
     void Revivir();
     void ActualizarTiempo();
-    void ForzarEstado(EstadoFurby nuevoEstado);
     void ActualizarAnimacion();
     void Dibujar(sf::RenderWindow& ventana) const;
 
@@ -34,16 +41,19 @@ public:
     bool CargarSpritesPorEstado(const std::string& carpeta);
     EstadoFurby ObtenerEstado() const;
     const std::string& ObtenerNombre() const;
+    void EstablecerNombre(const std::string& nuevoNombre);
     int ObtenerHambre() const;
     int ObtenerHigiene() const;
     int ObtenerSalud() const;
     int ObtenerSueno() const;
     int ObtenerGolpesHuevo() const;
+    bool CargarAnimacionesAcciones(const std::string& carpeta);
+    void ReproducirAccion(AccionFurby accion);
 
 private:
     void CambiarEstado(EstadoFurby nuevoEstado);
     void PrepararTemporizadores();
-    void ActualizarEstadoPorNecesidad();
+    void ActualizarTransicionesPorTiempo();
 
     std::string nombre;
     int hambre;
@@ -54,14 +64,20 @@ private:
     bool durmiendo;
     int edad;
     EstadoFurby estadoActual;
-    std::array<sf::Texture, 7> texturas;
-    std::array<bool, 7> tieneSpritePorEstado;
+    std::array<sf::Texture, 9> texturas;
+    std::array<bool, 9> tieneSpritePorEstado;
     sf::Sprite sprite;
     bool tieneSprite;
     sf::Clock relojAnimacion;
     int actualFrame;
     static constexpr int totalFrames = 5;
-    std::array<int, 7> framesPorEstado;
+    std::array<int, 9> framesPorEstado;
+    std::array<sf::Texture, 5> animacionesAcciones;
+    std::array<bool, 5> tieneAnimacionAccion;
+    std::array<int, 5> framesPorAccion;
+    AccionFurby accionActual;
+    int frameAccion;
+    sf::Clock relojAccion;
     sf::Clock relojHambre;
     sf::Clock relojSueno;
     sf::Clock relojHigiene;
@@ -69,5 +85,4 @@ private:
     THambre tHambre;
     TVida tVida;
     TEnfermedad tEnfermedad;
-    TSueno tSueno;
 };
