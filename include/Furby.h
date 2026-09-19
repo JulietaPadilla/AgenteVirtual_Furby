@@ -65,14 +65,14 @@ private:
     bool durmiendo;
     int edad;
     EstadoFurby estadoActual;
-    std::array<sf::Texture, 9> texturas;
-    std::array<bool, 9> tieneSpritePorEstado;
+    std::array<sf::Texture, 10> texturas;
+    std::array<bool, 10> tieneSpritePorEstado;
     sf::Sprite sprite;
     bool tieneSprite;
     sf::Clock relojAnimacion;
     int actualFrame;
     static constexpr int totalFrames = 5;
-    std::array<int, 9> framesPorEstado;
+    std::array<int, 10> framesPorEstado;
     std::array<sf::Texture, 5> animacionesAcciones;
     std::array<bool, 5> tieneAnimacionAccion;
     std::array<int, 5> framesPorAccion;

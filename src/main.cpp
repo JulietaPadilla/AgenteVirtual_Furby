@@ -13,10 +13,10 @@
 #include <queue>
 
 namespace {
-const std::array<std::string, 9> nombresSprites = {
+const std::array<std::string, 10> nombresSprites = {
     "huevo.png", "normal.png", "hambre.png", "sucio.png",
     "enfermo.png", "cansado.png", "hambre_cansado.png",
-    "hambre_sucio.png", "muerto.png"
+    "hambre_sucio.png", "hambre_cansado_sucio.png", "muerto.png"
 };
 
 int IndiceEstado(EstadoFurby estado) {
@@ -46,6 +46,7 @@ const char* NombreEstado(EstadoFurby estado) {
     case EstadoFurby::CANSADO: return "CANSADO";
     case EstadoFurby::HAMBRE_CANSADO: return "HAMBRE + CANSADO";
     case EstadoFurby::HAMBRE_SUCIO: return "HAMBRE + SUCIO";
+    case EstadoFurby::HAMBRE_CANSADO_SUCIO: return "HAMBRE + CANSADO + SUCIO";
     case EstadoFurby::MUERTO: return "MUERTO";
     }
     return "DESCONOCIDO";
@@ -95,10 +96,11 @@ void Furby::GolpearHuevo() {
     }
 }
 void Furby::Comer() {
-    if (estadoActual == EstadoFurby::HAMBRE || estadoActual == EstadoFurby::HAMBRE_CANSADO || estadoActual == EstadoFurby::HAMBRE_SUCIO) {
+    if (estadoActual == EstadoFurby::HAMBRE || estadoActual == EstadoFurby::HAMBRE_CANSADO || estadoActual == EstadoFurby::HAMBRE_SUCIO || estadoActual == EstadoFurby::HAMBRE_CANSADO_SUCIO) {
         hambre = std::min(100, hambre + 35);
         ReproducirAccion(AccionFurby::COMER);
-        if (estadoActual == EstadoFurby::HAMBRE_CANSADO) CambiarEstado(EstadoFurby::CANSADO);
+        if (estadoActual == EstadoFurby::HAMBRE_CANSADO_SUCIO) CambiarEstado(EstadoFurby::CANSADO);
+        else if (estadoActual == EstadoFurby::HAMBRE_CANSADO) CambiarEstado(EstadoFurby::CANSADO);
         else if (estadoActual == EstadoFurby::HAMBRE_SUCIO) CambiarEstado(EstadoFurby::SUCIO);
         else CambiarEstado(EstadoFurby::NORMAL);
     }
@@ -110,10 +112,11 @@ void Furby::ComerPorcion() {
     }
 }
 void Furby::Banar() {
-    if (estadoActual == EstadoFurby::SUCIO || estadoActual == EstadoFurby::HAMBRE_SUCIO) {
+    if (estadoActual == EstadoFurby::SUCIO || estadoActual == EstadoFurby::HAMBRE_SUCIO || estadoActual == EstadoFurby::HAMBRE_CANSADO_SUCIO) {
         higiene = std::min(100, higiene + 40);
         ReproducirAccion(AccionFurby::BANAR);
-        if (estadoActual == EstadoFurby::HAMBRE_SUCIO) CambiarEstado(EstadoFurby::HAMBRE);
+        if (estadoActual == EstadoFurby::HAMBRE_CANSADO_SUCIO) CambiarEstado(EstadoFurby::HAMBRE_CANSADO);
+        else if (estadoActual == EstadoFurby::HAMBRE_SUCIO) CambiarEstado(EstadoFurby::HAMBRE);
         else CambiarEstado(EstadoFurby::NORMAL);
     }
 }
@@ -129,19 +132,19 @@ void Furby::HacerPopo() {
     else if (estadoActual == EstadoFurby::HAMBRE) CambiarEstado(EstadoFurby::HAMBRE_SUCIO);
 }
 void Furby::Dormir() {
-    if ((estadoActual == EstadoFurby::NORMAL || estadoActual == EstadoFurby::HAMBRE_CANSADO || estadoActual == EstadoFurby::CANSADO) && sueno <= 50) {
+    if ((estadoActual == EstadoFurby::NORMAL || estadoActual == EstadoFurby::HAMBRE_CANSADO || estadoActual == EstadoFurby::HAMBRE_CANSADO_SUCIO || estadoActual == EstadoFurby::CANSADO) && sueno <= 50) {
         durmiendo = true;
         ReproducirAccion(AccionFurby::DORMIR);
-        if (estadoActual == EstadoFurby::NORMAL || estadoActual == EstadoFurby::HAMBRE_CANSADO) {
+        if (estadoActual == EstadoFurby::NORMAL || estadoActual == EstadoFurby::HAMBRE_CANSADO || estadoActual == EstadoFurby::HAMBRE_CANSADO_SUCIO) {
             CambiarEstado(EstadoFurby::CANSADO);
         }
     }
 }
 void Furby::Despertar() {
-    if (estadoActual == EstadoFurby::CANSADO || estadoActual == EstadoFurby::HAMBRE_CANSADO) {
+    if (durmiendo && (estadoActual == EstadoFurby::CANSADO || estadoActual == EstadoFurby::HAMBRE_CANSADO || estadoActual == EstadoFurby::HAMBRE_CANSADO_SUCIO)) {
         durmiendo = false;
         ReproducirAccion(AccionFurby::DESPERTAR);
-        if (estadoActual == EstadoFurby::HAMBRE_CANSADO) CambiarEstado(EstadoFurby::HAMBRE);
+        if (estadoActual == EstadoFurby::HAMBRE_CANSADO || estadoActual == EstadoFurby::HAMBRE_CANSADO_SUCIO) CambiarEstado(EstadoFurby::HAMBRE);
         else CambiarEstado(EstadoFurby::NORMAL);
     }
 }
@@ -197,29 +200,38 @@ void Furby::ActualizarTransicionesPorTiempo() {
 
     switch (estadoActual) {
     case EstadoFurby::NORMAL:
-        if (hambreBaja && cansancio) CambiarEstado(EstadoFurby::HAMBRE_CANSADO);
+        if (hambreBaja && higieneBaja && cansancio) CambiarEstado(EstadoFurby::HAMBRE_CANSADO_SUCIO);
+        else if (hambreBaja && cansancio) CambiarEstado(EstadoFurby::HAMBRE_CANSADO);
         else if (hambreBaja && higieneBaja) CambiarEstado(EstadoFurby::HAMBRE_SUCIO);
         else if (hambreBaja) CambiarEstado(EstadoFurby::HAMBRE);
         else if (higieneBaja) CambiarEstado(EstadoFurby::SUCIO);
         else if (cansancio) CambiarEstado(EstadoFurby::CANSADO);
         break;
     case EstadoFurby::HAMBRE:
-        if (!hambreBaja && cansancio) CambiarEstado(EstadoFurby::CANSADO);
+        if (higieneBaja && cansancio) CambiarEstado(EstadoFurby::HAMBRE_CANSADO_SUCIO);
+        else if (!hambreBaja && cansancio) CambiarEstado(EstadoFurby::CANSADO);
         else if (!hambreBaja && higieneBaja) CambiarEstado(EstadoFurby::SUCIO);
         else if (!hambreBaja) CambiarEstado(EstadoFurby::NORMAL);
         else if (cansancio) CambiarEstado(EstadoFurby::HAMBRE_CANSADO);
         else if (higieneBaja) CambiarEstado(EstadoFurby::HAMBRE_SUCIO);
         break;
     case EstadoFurby::SUCIO:
-        if (hambreBaja) CambiarEstado(EstadoFurby::HAMBRE_SUCIO);
+        if (hambreBaja && cansancio) CambiarEstado(EstadoFurby::HAMBRE_CANSADO_SUCIO);
+        else if (hambreBaja) CambiarEstado(EstadoFurby::HAMBRE_SUCIO);
         break;
     case EstadoFurby::CANSADO:
-        if (hambreBaja) CambiarEstado(EstadoFurby::HAMBRE_CANSADO);
+        if (hambreBaja && higieneBaja) CambiarEstado(EstadoFurby::HAMBRE_CANSADO_SUCIO);
+        else if (hambreBaja) CambiarEstado(EstadoFurby::HAMBRE_CANSADO);
         break;
     case EstadoFurby::HAMBRE_CANSADO:
-        if (!hambreBaja && higieneBaja) CambiarEstado(EstadoFurby::SUCIO);
+        if (higieneBaja) CambiarEstado(EstadoFurby::HAMBRE_CANSADO_SUCIO);
         else if (!hambreBaja) CambiarEstado(EstadoFurby::CANSADO);
-        else if (higieneBaja) CambiarEstado(EstadoFurby::HAMBRE_SUCIO);
+        break;
+    case EstadoFurby::HAMBRE_CANSADO_SUCIO:
+        if (!hambreBaja && !higieneBaja && !cansancio) CambiarEstado(EstadoFurby::NORMAL);
+        else if (!hambreBaja && !higieneBaja) CambiarEstado(EstadoFurby::CANSADO);
+        else if (!hambreBaja && !cansancio) CambiarEstado(EstadoFurby::SUCIO);
+        else if (!higieneBaja && !cansancio) CambiarEstado(EstadoFurby::HAMBRE);
         break;
     case EstadoFurby::HAMBRE_SUCIO:
         if (!hambreBaja) CambiarEstado(EstadoFurby::SUCIO);
@@ -626,7 +638,7 @@ void JuegoAgente::Dibujar() {
 
 bool JuegoAgente::EsEstadoDeHambre() const {
     EstadoFurby estado = personaje.ObtenerEstado();
-    return estado == EstadoFurby::HAMBRE || estado == EstadoFurby::HAMBRE_CANSADO || estado == EstadoFurby::HAMBRE_SUCIO;
+    return estado == EstadoFurby::HAMBRE || estado == EstadoFurby::HAMBRE_CANSADO || estado == EstadoFurby::HAMBRE_SUCIO || estado == EstadoFurby::HAMBRE_CANSADO_SUCIO;
 }
 
 void JuegoAgente::IniciarMinijuegoAStar() {

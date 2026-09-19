@@ -9,6 +9,7 @@ enum class EstadoFurby {
     CANSADO,
     HAMBRE_CANSADO,
     HAMBRE_SUCIO,
+    HAMBRE_CANSADO_SUCIO,
     MUERTO
 };
 
