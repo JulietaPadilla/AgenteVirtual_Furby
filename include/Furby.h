@@ -26,6 +26,7 @@ public:
     void Nacer();
     void GolpearHuevo();
     void Comer();
+    void ComerPorcion();
     void Banar();
     void Curar();
     void HacerPopo();

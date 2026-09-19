@@ -11,6 +11,9 @@
 #include <SFML/Audio/Music.hpp>
 #include <SFML/System/String.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML/System/Clock.hpp>
+#include <array>
+#include <utility>
 #include <vector>
 
 class JuegoAgente {
@@ -30,6 +33,12 @@ private:
     void DibujarPantallaMuerte();
     void DibujarPantallaInicio();
     void IniciarPartida();
+    void IniciarMinijuegoAStar();
+    void CalcularRutaAStar();
+    void ActualizarMinijuegoAStar();
+    void DibujarMinijuegoAStar();
+    bool EsEstadoDeHambre() const;
+    void CargarRecursosAStar();
 
     Furby personaje;
     sf::RenderWindow ventana;
@@ -40,6 +49,11 @@ private:
     sf::Text textoNombre;
     sf::Texture texturaPantallaInicio;
     sf::Texture texturaFondoJuego;
+    sf::Texture texturaPisoAStar;
+    sf::Texture texturaObstaculoAStar;
+    sf::Texture texturaComidaAStar;
+    sf::Texture texturaRutaAStar;
+    sf::Texture texturaFurbyAStar;
     sf::Sprite spritePantallaInicio;
     sf::Sprite spriteFondoJuego;
     sf::Music musica;
@@ -48,5 +62,21 @@ private:
     bool escribiendoNombre;
     bool tienePantallaInicio;
     bool tieneFondoJuego;
+    bool tienePisoAStar;
+    bool tieneObstaculoAStar;
+    bool tieneComidaAStar;
+    bool tieneRutaAStar;
+    bool tieneFurbyAStar;
+    bool minijuegoActivo;
+    bool esperandoComidaAStar;
+    int comidasAStar;
+    bool minijuegoCompletado;
+    EstadoFurby estadoAnterior;
+    std::array<std::array<bool, 12>, 8> obstaculosAStar;
+    std::vector<std::pair<int, int>> rutaAStar;
+    std::pair<int, int> inicioAStar;
+    std::pair<int, int> objetivoAStar;
+    std::size_t pasoAStar;
+    sf::Clock relojAStar;
     std::vector<BotonInterfaz> botones;
 };

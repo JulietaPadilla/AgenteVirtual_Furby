@@ -26,6 +26,7 @@ El juego incluye una pantalla de inicio para asignar un nombre, fondos pixel art
 - **Musica de fondo:** reproduccion continua durante el juego.
 - **Fondos pixel art:** pantalla de inicio y escenario principal configurables.
 - **Pantalla de muerte y reanimacion:** el jugador puede revivir al Furby despues de su muerte.
+- **Minijuego A* opcional:** cuando el Furby tiene hambre, el jugador puede abrir una cuadricula y elegir si quiere buscar comida.
 
 ---
 
@@ -90,7 +91,17 @@ Si aparecen errores de DLL, copia junto al ejecutable las bibliotecas de SFML y 
 | `K` | Probar la muerte |
 | `V` | Revivir al Furby |
 
-Tambien puedes utilizar los botones visibles en pantalla.
+Tambien puedes utilizar los botones visibles en pantalla, que muestran un icono de la accion correspondiente.
+
+### Minijuego de comida con A*
+
+Cuando el Furby entra en `HAMBRE`, `HAMBRE + CANSADO` o `HAMBRE + SUCIO`, aparece el boton `BUSCAR COMIDA (A)`. El minijuego es opcional: si el jugador no lo selecciona, puede continuar jugando normalmente. Cada episodio de hambre permite hasta tres busquedas, con obstaculos y comida diferentes en cada mapa. Al abrirlo, debe hacer clic sobre la comida; en ese momento A* calcula la ruta de menor costo desde el Furby hasta la comida usando:
+
+```text
+f(n) = g(n) + h(n)
+```
+
+`g(n)` es el costo acumulado de los movimientos y `h(n)` es la distancia Manhattan hasta la comida. Las celdas moradas son obstaculos, la marca naranja representa al Furby y la verde representa la comida. Al llegar al objetivo se ejecuta `COMER()` y se resuelve la parte de hambre del estado.
 
 ---
 
@@ -113,7 +124,7 @@ MUERTO
 ### Umbrales de necesidades
 
 - El hambre baja cada 8 segundos.
-- La higiene baja cada 8 segundos.
+- La higiene baja cada 10 segundos, un poco mas lento que el hambre.
 - El sueno baja cada 10 segundos.
 - `HAMBRE`, `SUCIO` y `CANSADO` aparecen cuando la necesidad correspondiente llega al 50% o menos.
 - `ENFERMO` aparece cuando la salud llega al 30% o menos.
@@ -166,6 +177,19 @@ assets/fonts/F25_Bank_Printer.otf
 ```
 
 Las animaciones pueden ser imagenes individuales o tiras horizontales de cinco frames.
+
+### Sprites del minijuego A*
+
+El algoritmo ya esta preparado para usar estos recursos opcionales:
+
+```text
+assets/Images/astar/piso.png
+assets/Images/astar/obstaculo.png
+assets/Images/astar/comida.png
+assets/Images/astar/ruta.png
+```
+
+`piso.png` se dibuja en las celdas transitables, `obstaculo.png` en las celdas bloqueadas, `comida.png` en el objetivo y `ruta.png` sobre el camino calculado. Si alguno no existe, se utiliza un marcador grafico de respaldo.
 
 ---
 
